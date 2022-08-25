@@ -1,0 +1,7 @@
+D:\dokumenty\Studia Infa Stosowana\PROSIKO\Tsunami-UDP\TsunamiUDP\Klient\bin\Debug\Klient.exe.config
+D:\dokumenty\Studia Infa Stosowana\PROSIKO\Tsunami-UDP\TsunamiUDP\Klient\bin\Debug\Klient.exe
+D:\dokumenty\Studia Infa Stosowana\PROSIKO\Tsunami-UDP\TsunamiUDP\Klient\bin\Debug\Klient.pdb
+D:\dokumenty\Studia Infa Stosowana\PROSIKO\Tsunami-UDP\TsunamiUDP\Klient\obj\Debug\Klient.csproj.AssemblyReference.cache
+D:\dokumenty\Studia Infa Stosowana\PROSIKO\Tsunami-UDP\TsunamiUDP\Klient\obj\Debug\Klient.csproj.CoreCompileInputs.cache
+D:\dokumenty\Studia Infa Stosowana\PROSIKO\Tsunami-UDP\TsunamiUDP\Klient\obj\Debug\Klient.exe
+D:\dokumenty\Studia Infa Stosowana\PROSIKO\Tsunami-UDP\TsunamiUDP\Klient\obj\Debug\Klient.pdb

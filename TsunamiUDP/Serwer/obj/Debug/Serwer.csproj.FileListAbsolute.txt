@@ -1,0 +1,7 @@
+D:\dokumenty\Studia Infa Stosowana\PROSIKO\Tsunami-UDP\TsunamiUDP\Serwer\bin\Debug\Serwer.exe.config
+D:\dokumenty\Studia Infa Stosowana\PROSIKO\Tsunami-UDP\TsunamiUDP\Serwer\bin\Debug\Serwer.exe
+D:\dokumenty\Studia Infa Stosowana\PROSIKO\Tsunami-UDP\TsunamiUDP\Serwer\bin\Debug\Serwer.pdb
+D:\dokumenty\Studia Infa Stosowana\PROSIKO\Tsunami-UDP\TsunamiUDP\Serwer\obj\Debug\Serwer.csproj.AssemblyReference.cache
+D:\dokumenty\Studia Infa Stosowana\PROSIKO\Tsunami-UDP\TsunamiUDP\Serwer\obj\Debug\Serwer.csproj.CoreCompileInputs.cache
+D:\dokumenty\Studia Infa Stosowana\PROSIKO\Tsunami-UDP\TsunamiUDP\Serwer\obj\Debug\Serwer.exe
+D:\dokumenty\Studia Infa Stosowana\PROSIKO\Tsunami-UDP\TsunamiUDP\Serwer\obj\Debug\Serwer.pdb
