@@ -45,7 +45,6 @@ namespace Klient
             int bytes;
             try
             {
-
                 do
                 {
                     bytes = stream.Read(data, 0, data.Length);

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
@@ -15,26 +14,22 @@ namespace Serwer
         private TcpClient client;
         private NetworkStream stream;
 
-
         public SerwerTCP(int port)
         {
-            tcpListener = new TcpListener(IPAddress.Any,port);
+            tcpListener = new TcpListener(IPAddress.Any, port);
             tcpListener.Start();
-            client = tcpListener.AcceptTcpClient();
-           
         }
 
-        public void SentToClient(string command)
+        public async Task SentToClient(string command)
         {
-            while (client.Connected) 
+            while (client.Connected)
             {
-                while (command != string.Empty) 
+                while (command != string.Empty)
                 {
                     byte[] msg = Encoding.ASCII.GetBytes(command);
-                    stream.Write(msg, 0, msg.Length);
+                    await stream.WriteAsync(msg, 0, msg.Length);
+                    command = string.Empty;
                 }
-                command = string.Empty;
-
             }
         }
 
@@ -44,24 +39,17 @@ namespace Serwer
             byte[] bytes = new byte[256];
             string data = string.Empty;
 
-
+            client = await tcpListener.AcceptTcpClientAsync();
             stream = client.GetStream();
-          //  Console.WriteLine("[Server TCP] Connected!");
-
-         
-
-                while (client.Connected)
+            while (client.Connected)
+            {
+                if (stream.DataAvailable)
                 {
-                    if (stream.DataAvailable)
-                    {
-                        len =await stream.ReadAsync(bytes, 0, bytes.Length);
-                        data += Encoding.ASCII.GetString(bytes, 0, len);
-                    }
-                    return data;
+                    len = await stream.ReadAsync(bytes, 0, bytes.Length);
+                    data += Encoding.ASCII.GetString(bytes, 0, len);
                 }
-        
-        
-                   
+                return data;
+            }
             stream.Close();
             return "Message error!";
         }
