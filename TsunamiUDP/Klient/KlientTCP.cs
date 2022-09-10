@@ -31,11 +31,10 @@ namespace Klient
             }
         }
 
-        public string SentToServer(string command)
+        public void SentToServer(string command)
         {
             byte[] data = System.Text.Encoding.ASCII.GetBytes(command);
             stream.Write(data, 0, data.Length);
-            return "[Client TCP] Message sent!\n";
         }
 
         public string GetFromServer() 

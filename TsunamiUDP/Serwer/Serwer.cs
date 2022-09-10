@@ -23,7 +23,7 @@ namespace Serwer
         private static bool goneoff = false;
         private static string answer = null;
         private static string path;
-        public static Dictionary<int, string> userBase = new Dictionary<int, string>(); 
+        public static Dictionary<int, string> userBase = new Dictionary<int, string>();
 
 
         public string FilesList(string path)
@@ -34,13 +34,13 @@ namespace Serwer
             string list = null;
 
             foreach (FileInfo i in Files)
-            {           
+            {
                 list += i.Name + " ";
             }
             return list;
         }
 
-        public string FileInfo(string fileName) 
+        public string FileInfo(string fileName)
         {
             //rozmiar_paczki/ilosc_paczek/rozmiar_pliku/id_zadania
             string info = null;
@@ -59,15 +59,14 @@ namespace Serwer
             }
 
             int numPack = (int)Math.Ceiling((double)file.Length / packSize);
-            
+
             int id = (new Random()).Next(1, 100);
             if (userBase.Keys.Count != 0)
-                while (!userBase.ContainsKey(id))
+                while (userBase.ContainsKey(id))
                     id = (new Random()).Next(1, 100);
-            
+
             info += "Ok" + file.Length.ToString() + packSize.ToString() + numPack.ToString() + id.ToString();
-            userBase.Add(id,info);
-            Console.WriteLine("dupa");
+            userBase.Add(id, info);
             return info;
         }
 
@@ -81,38 +80,55 @@ namespace Serwer
             SerwerUDP serwerUDP = new SerwerUDP(12346);
             path = @"D:\dokumenty\Studia Infa Stosowana\PROSIKO\Tsunami-UDP\serwer\";
 
-            while (serverRunning) 
+            while (true)
             {
-                if (answer == null && goneoff ==  false) 
-                {
-                    goneoff = true;
-                    Task.Run(() => answer = serwerTCP.GetFromClient().Result);   //wait request, nonblocking
-                }
 
-                if (answer != null)
+                //if (answer == null && goneoff == false)
+                //{
+                //    goneoff = true;
+                    answer =  serwerTCP.GetFromClient().Result;   //wait request, nonblocking
+                //}
+
+                Task.Run(async () =>
                 {
-                    switch (answer.Split()[0])
+
+                    while (serverRunning)
                     {
-                        case "list":
-                            Task.Run(() => serwerTCP.SentToClient(server.FilesList(path)));
-                            break;
-                        case "get":
-                            //Console.WriteLine(answer.Split()[1]);
-                            //server.FileInfo(answer.Split()[1]);
-                            Task.Run(async () =>
+                        //if (answer == null && goneoff ==  false) 
+                        //{
+                        //    goneoff = true;
+                        //    Task.Run(() => answer = serwerTCP.GetFromClient().Result);   //wait request, nonblocking
+                        //}
+                      //  await Task.Delay(1500);
+
+                        //if (answer != null)
+                      //  {
+                            switch (answer.Split()[0])
                             {
-                                await serwerTCP.SentToClient(server.FileInfo(answer.Split()[1]));
-                            });
-                            //przeslanie za pomoca TCP parametrow do komunikacji przez UDP
-                            //przeslanie za pomoca UDP
-                            break;
-                        default:
-                            break;
+                                case "list":
+                                      await serwerTCP.SentToClient(server.FilesList(path));
+                                    break;
+                                case "get":
+                                    //Console.WriteLine(answer.Split()[1]);
+                                    //server.FileInfo(answer.Split()[1]);
+                                    
+                                    await serwerTCP.SentToClient(server.FileInfo(answer.Split()[1]));
+                                   
+                                    //przeslanie za pomoca TCP parametrow do komunikacji przez UDP
+                                    //przeslanie za pomoca UDP
+                                    break;
+                                default:
+                                    break;
+                            }
+
+                            serverRunning = false;
+                            //goneoff = false;
+                            //answer = null;
+                       // }
                     }
-                    goneoff = false;
-                    answer = null;
-                }
+                });
                 Task.Delay(1000);
+
             }
         }
     }

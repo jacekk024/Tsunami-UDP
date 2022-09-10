@@ -20,7 +20,7 @@ namespace Klient
 
             while (running) 
             {
-                Console.WriteLine("[Client] Give the command:");
+                Console.Write("[Client] Give the command:");
                 command = Console.ReadLine();
 
                 
@@ -44,7 +44,7 @@ namespace Klient
                         running = false;
                         break;
                     default:
-                        Console.WriteLine("[Client] Wrong Option! Choose again! \n");
+                        Console.WriteLine("[Client] Wrong Option! Choose again!");
                         break;
                 }
             }
