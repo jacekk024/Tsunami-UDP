@@ -10,40 +10,37 @@ namespace Klient
 {
     class KlientUDP
     {
-
         private UdpClient udpClient;
         private int remotePort;
 
-
         //dane odnosnie transmisji 
-
-
 
         public KlientUDP(int localPort,int remotePort) 
         {
             this.remotePort = remotePort;
             udpClient = new UdpClient(localPort);
+            udpClient.Connect("127.0.0.1", remotePort);
         }
 
-        public string SentToServer(string command)
+        public void SentToServer(string command)
         {
-
             byte[] sendBytes = Encoding.ASCII.GetBytes(command);
-            udpClient.Connect("localhost", remotePort);
             udpClient.Send(sendBytes, sendBytes.Length);
-            return "[Client UDP] Message sent!\n";
-
         }
 
-        public string GetFromServer(string commmand)
+        public async Task<string> GetFromServer()
         {
-            IPEndPoint RemoteIPEndPoint = new IPEndPoint(IPAddress.Any, 0);
-            byte[] receiveBytes = udpClient.Receive(ref RemoteIPEndPoint);
-            string returnData = Encoding.ASCII.GetString(receiveBytes);
-            Console.WriteLine("[Client UDP] Message received!\n");
+          //  udpClient.Connect("127.0.0.1", remotePort);
+            //IPEndPoint RemoteIPEndPoint = new IPEndPoint(IPAddress.Any, 0);
+            var receiveBytes = await udpClient.ReceiveAsync();
+            string returnData = Encoding.ASCII.GetString(receiveBytes.Buffer);
             return returnData;
         }
 
-
+        public void ShutDownClient()
+        {
+            Console.WriteLine("[Client UDP] Client closed!");
+            udpClient.Close();
+        }
     }
 }

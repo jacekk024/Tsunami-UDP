@@ -20,26 +20,23 @@ namespace Serwer
             RemoteIpEndPoint = new IPEndPoint(IPAddress.Any, 0);
         }
 
-        public string SentToClient()
+        public async Task SentToClient(string command)
         {
-            while (true) 
-            {
-                byte[] sendData = Encoding.ASCII.GetBytes(GetFromClient());
-                client.Send(sendData, sendData.Length, RemoteIpEndPoint);
-                Console.WriteLine("[Server UDP] Message sent!");
-
-            }
+          //  while (true)
+           // {
+                 byte[] sendData = Encoding.ASCII.GetBytes(command);
+                 await client.SendAsync(sendData, sendData.Length,RemoteIpEndPoint);
+          //  }
         }
 
-        public string GetFromClient()
+
+        public async Task<string> GetFromClient()
         {
-            while (true)
-            {
-                byte[] bytes = client.Receive(ref RemoteIpEndPoint);
-                string receiveData = Encoding.ASCII.GetString(bytes);
-                Console.WriteLine("[Server UDP] Message receive!");
-                return receiveData;
-            }
+                var bytes = await client.ReceiveAsync();
+                string receiveData = Encoding.ASCII.GetString(bytes.Buffer);
+                //Console.WriteLine("Received data {0}", receiveData);
+                //Console.WriteLine("[Server UDP] Message receive!");
+                return receiveData;            
         }
     }
 }

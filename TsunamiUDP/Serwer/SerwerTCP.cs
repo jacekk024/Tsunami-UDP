@@ -26,7 +26,7 @@ namespace Serwer
             {
                 while (command != string.Empty)
                 {
-                    byte[] msg = Encoding.ASCII.GetBytes(command);
+                     byte[] msg = Encoding.ASCII.GetBytes(command);
                      await stream.WriteAsync(msg, 0, msg.Length);
                      command = string.Empty;
                 }
