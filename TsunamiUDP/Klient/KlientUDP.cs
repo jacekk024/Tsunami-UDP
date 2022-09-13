@@ -15,7 +15,7 @@ namespace Klient
 
         //dane odnosnie transmisji 
 
-        public KlientUDP(int localPort,int remotePort) 
+        public KlientUDP(int localPort, int remotePort)
         {
             this.remotePort = remotePort;
             udpClient = new UdpClient(localPort);
@@ -30,16 +30,17 @@ namespace Klient
 
         public async Task<string> GetFromServer()
         {
-          //  udpClient.Connect("127.0.0.1", remotePort);
+            //  udpClient.Connect("127.0.0.1", remotePort);
             //IPEndPoint RemoteIPEndPoint = new IPEndPoint(IPAddress.Any, 0);
             var receiveBytes = await udpClient.ReceiveAsync();
             string returnData = Encoding.ASCII.GetString(receiveBytes.Buffer);
+            //udpClient.Close();
             return returnData;
         }
 
         public void ShutDownClient()
         {
-            Console.WriteLine("[Client UDP] Client closed!");
+            //Console.WriteLine("[Client UDP] Client closed!");
             udpClient.Close();
         }
     }

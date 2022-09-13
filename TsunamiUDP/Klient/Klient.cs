@@ -15,17 +15,17 @@ namespace Klient
 
         static void Main()
         {
-            int numPack;
+           // int numPack;
             string data = null;
-            clientUdp = new KlientUDP(12347, 12346);
+            bool sendFlag = false;
+           // clientUdp = new KlientUDP(12347, 12346);
 
             running = true;
 
-            while (running) 
+            while (running)
             {
                 Console.Write("[Client] Give the command:");
                 command = Console.ReadLine();
-
 
                 switch (command.Split()[0].Trim(' '))
                 {
@@ -40,9 +40,11 @@ namespace Klient
                         clientTcp.SentToServer(command);
                         string fileInfo = clientTcp.GetFromServer();
                         Console.WriteLine("[Client] File info:" + fileInfo);
-                        numPack = int.Parse(fileInfo.Split()[3]);
-                       // clientUdp = new KlientUDP(12347, 12346);
-                        clientUdp.SentToServer("siema");
+                    //    numPack = int.Parse(fileInfo.Split()[3]);
+                            
+                            clientUdp = new KlientUDP(12347, 12346);
+                            clientUdp.SentToServer("siema");
+                            sendFlag = true;
                         //clientUdp.SentToServer("siema");
                         //clientUdp.SentToServer("siema");
 
@@ -79,21 +81,25 @@ namespace Klient
                 //Task.Delay(1000);
 
                 //// udp client get id_zadania
-                //Task.Run(async () =>
-                //{
-    
-                //    //clientUdp.SentToServer("siema");
-                //    while (true)
-                //    {
-
-                //      //  data = await clientUdp.GetFromServer();
-                //        Console.WriteLine(data);
-                //        clientUdp.ShutDownClient();
-                //        break;
-                //    }
-                //});
-                //Task.Delay(1000);
-
+                Task.Run(async () =>
+                {
+                    //clientUdp = new KlientUDP(12347, 12346);
+                    //clientUdp.SentToServer("siema");
+                    //clientudp.senttoserver("siema");
+                    while (true)
+                    {
+                        data = await clientUdp.GetFromServer();
+                        Console.WriteLine(data);
+                        break;
+                    }
+                //    clientUdp.ShutDownClient();
+                });
+                Task.Delay(1000);
+                if (sendFlag != false)
+                {
+                    clientUdp.ShutDownClient();
+                    sendFlag = false;
+                }
 
                 //data = null;
             }

@@ -85,7 +85,7 @@ namespace Serwer
                 string filePath = "plik1.txt";
                 if (File.Exists(filePath) != false)
                 {
-                    string text = await ReadTextAsync(path+filePath);
+                    string text = await ReadTextAsync(path + filePath);
                     Console.WriteLine(text);
                 }
                 else
@@ -133,38 +133,40 @@ namespace Serwer
 
             while (true)
             {
-                answer =  serwerTCP.GetFromClient().Result;   //wait request, nonblocking
+                answer = serwerTCP.GetFromClient().Result;   //wait request, nonblocking
 
 
                 Task.Run(async () =>
                 {
                     while (serverRunning)
-                    {                   
-                            switch (answer.Split()[0])
-                            {
-                                case "list":
-                                    await serwerTCP.SentToClient(server.FilesList(path));
-                                    break;
-                                case "get":
-                                    fileName = answer.Split()[1];
-                                    await serwerTCP.SentToClient(server.FileInfo(fileName));
+                    {
+                        switch (answer.Split()[0])
+                        {
+                            case "list":
+                                await serwerTCP.SentToClient(server.FilesList(path));
                                 break;
-                                default:
-                                    break;
-                            }
-                            serverRunning = false;
-                            answer = null;
-                    }                 
+                            case "get":
+                                fileName = answer.Split()[1];
+                                await serwerTCP.SentToClient(server.FileInfo(fileName));
+                                break;
+                            default:
+                                break;
+                        }
+                        serverRunning = false;
+                        answer = null;
+                    }
                 });
-                Task.Delay(1000);
-                dataUDP = serwerUDP.GetFromClient().Result;
-                Task.Run(async() =>
+              //  Task.Delay(1000);
+            //    dataUDP = serwerUDP.GetFromClient().Result;
+                Task.Run(async () =>
                 {
-                  //  dataUDP = serwerUDP.GetFromClient().Result;
+                    //dataUDP = serwerUDP.GetFromClient().Result;
+                    //  dataUDP = serwerUDP.GetFromClient().Result;
                     while (true)
                     {
-                         Console.WriteLine(dataUDP);
-                         await serwerUDP.SentToClient("siema client");                      
+                        dataUDP = serwerUDP.GetFromClient().Result;
+                        Console.WriteLine(dataUDP);
+                        await serwerUDP.SentToClient("siema client");
                     }
                 });
                 Task.Delay(1000);
