@@ -15,7 +15,7 @@ namespace Klient
 
         static void Main()
         {
-           // int numPack;
+            int numPack;
             string data = null;
             bool sendFlag = false;
            // clientUdp = new KlientUDP(12347, 12346);
@@ -40,10 +40,13 @@ namespace Klient
                         clientTcp.SentToServer(command);
                         string fileInfo = clientTcp.GetFromServer();
                         Console.WriteLine("[Client] File info:" + fileInfo);
-                    //    numPack = int.Parse(fileInfo.Split()[3]);
+
+                            numPack = int.Parse(fileInfo.Split()[3]);
                             
                             clientUdp = new KlientUDP(12347, 12346);
-                            clientUdp.SentToServer("siema");
+                            clientUdp.SentToServer(fileInfo.Split()[4]);// file id
+                            // wysylamy id a serwer sam ogarnia ile paczek nam wyslac odczytujac to z bazy 
+
                             sendFlag = true;
                         //clientUdp.SentToServer("siema");
                         //clientUdp.SentToServer("siema");
@@ -78,23 +81,23 @@ namespace Klient
 
 
                 // clientUdp.SentToServer("siema");
-                //Task.Delay(1000);
+                Task.Delay(1000);
 
                 //// udp client get id_zadania
-                Task.Run(async () =>
+                Task.Run(() =>
                 {
-                    //clientUdp = new KlientUDP(12347, 12346);
-                    //clientUdp.SentToServer("siema");
-                    //clientudp.senttoserver("siema");
-                    while (true)
-                    {
-                        data = await clientUdp.GetFromServer();
-                        Console.WriteLine(data);
-                        break;
-                    }
-                //    clientUdp.ShutDownClient();
+                   // = new KlientUDP(12347, 12346);
+                  // clientUdp.SentToServer("siema");
+                   //clientudp.senttoserver("siema");
+                   while (true)
+                   {
+                       data = clientUdp.GetFromServer().Result;
+                       Console.WriteLine(data);
+
+                   }
+                   //clientUdp.ShutDownClient();
                 });
-                Task.Delay(1000);
+                // Task.Delay(1000);
                 if (sendFlag != false)
                 {
                     clientUdp.ShutDownClient();

@@ -125,6 +125,7 @@ namespace Serwer
         {
             Console.WriteLine("[Server] Running!");
             serverRunning = true;
+            bool sendFlag = false;
             string fileName = null;
             var server = new Serwer();
             SerwerTCP serwerTCP = new SerwerTCP(12345);
@@ -138,6 +139,7 @@ namespace Serwer
 
                 Task.Run(async () =>
                 {
+                   // answer = serwerTCP.GetFromClient().Result;   //wait request, nonblocking
                     while (serverRunning)
                     {
                         switch (answer.Split()[0])
@@ -148,6 +150,7 @@ namespace Serwer
                             case "get":
                                 fileName = answer.Split()[1];
                                 await serwerTCP.SentToClient(server.FileInfo(fileName));
+                                sendFlag = true;
                                 break;
                             default:
                                 break;
@@ -156,9 +159,10 @@ namespace Serwer
                         answer = null;
                     }
                 });
-              //  Task.Delay(1000);
-            //    dataUDP = serwerUDP.GetFromClient().Result;
-                Task.Run(async () =>
+                //  Task.Delay(1000);
+                //    dataUDP = serwerUDP.GetFromClient().Result;
+
+                Task.Run( () =>
                 {
                     //dataUDP = serwerUDP.GetFromClient().Result;
                     //  dataUDP = serwerUDP.GetFromClient().Result;
@@ -166,8 +170,10 @@ namespace Serwer
                     {
                         dataUDP = serwerUDP.GetFromClient().Result;
                         Console.WriteLine(dataUDP);
-                        await serwerUDP.SentToClient("siema client");
+                        serwerUDP.SentToClient("siema client");
                     }
+
+                   // serwerUDP.SentToClient("siema client");
                 });
                 Task.Delay(1000);
             }

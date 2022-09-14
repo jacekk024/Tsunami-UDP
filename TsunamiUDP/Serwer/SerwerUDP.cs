@@ -20,13 +20,10 @@ namespace Serwer
             RemoteIpEndPoint = new IPEndPoint(IPAddress.Any, 0);
         }
 
-        public async Task SentToClient(string command)
-        {
-          //  while (true)
-           // {
+        public void SentToClient(string command)
+        {            
                  byte[] sendData = Encoding.ASCII.GetBytes(command);
-                 await client.SendAsync(sendData, sendData.Length,RemoteIpEndPoint);
-          //  }
+                 client.Send(sendData, sendData.Length,RemoteIpEndPoint);     
         }
 
 
