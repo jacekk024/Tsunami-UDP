@@ -20,13 +20,11 @@ namespace Serwer
            // RemoteIpEndPoint = new IPEndPoint(IPAddress.Any, 0);
         }
 
-        public void SentToClient(string command)
+        public async Task SentToClient(string command)
         {
-     
                 IPEndPoint RemoteIpEndPoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 12347);
                 byte[] sendData = Encoding.ASCII.GetBytes(command);
-                udpClient.Send(sendData, sendData.Length, RemoteIpEndPoint);
-                   
+                await udpClient.SendAsync(sendData, sendData.Length, RemoteIpEndPoint);            
         }
 
 

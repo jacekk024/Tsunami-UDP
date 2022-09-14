@@ -8,19 +8,16 @@ namespace Klient
 {
     class Klient
     {
-        private static bool running;
+        private static bool running = true;
         private static string command;
         private static KlientTCP clientTcp;
         private static KlientUDP clientUdp;
+        static string data = null;
+        static int numPack;
 
         static void Main()
         {
-            int numPack;
-              string data = null;
-            // bool sendFlag = false;
-            // clientUdp = new KlientUDP(12347, 12346);
             clientUdp = new KlientUDP(12347, 12346);
-            running = true;
 
             while (running)
             {
@@ -43,21 +40,31 @@ namespace Klient
                             Console.WriteLine("[Client] File info: " + fileInfo);
 
                             numPack = int.Parse(fileInfo.Split()[3]);
-
                             clientUdp.SentToServer(fileInfo.Split()[4]);// file id
-
-                            Task.Run(() =>
+                            Task.Run(async() =>
                             {
-                                //while (true)
-                                     clientUdp.GetFromServer();
+                                while (numPack >= 0)
+                                {   
+                                    data = await clientUdp.GetFromServer();
 
+                                    Console.WriteLine("[Client] Data pack: {0}, Received data: {1}", numPack, data);
+                                    if (data != null)
+                                    {
+                                        numPack--;
+                                        data = null;
+                                    }
+ 
+                                }
                             });
-                        Task.Delay(1000);
+                            clientTcp.SentToServer("data OK");
+                        //potwierdzenie otrzymania pliku OK TCP
 
                         break;
                         case "stop":
-                            break;
+                            clientTcp.SentToServer("stop");
+                        break;
                         case "help":
+                        HelpInfo();
                             break;
                         case "exit":
                             Console.WriteLine("[Client] Closed!\n");
@@ -67,9 +74,18 @@ namespace Klient
                             Console.WriteLine("[Client] Wrong Option! Choose again!");
                             break;
                     }
-                Task.Delay(1000);
-
+                
             }
+        }
+
+
+
+        static void HelpInfo() 
+        {
+            Console.WriteLine("[Client]-[Help]\n" +
+                "list - show available list of files\n" +
+                "get - [name-of-file] - get info about file and download it\n" +
+                "stop - [id]- stop downloading data from server for current id");        
         }
     }
 }

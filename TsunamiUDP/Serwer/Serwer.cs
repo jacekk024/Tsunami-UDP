@@ -19,8 +19,7 @@ namespace Serwer
 
     class Serwer
     {
-        private static bool serverRunning = false;
-        //private static bool goneoff = false;
+        private static bool serverRunning = true;
         private static string answer = null;
         private static string dataUDP = null;
         private static string path;
@@ -45,7 +44,7 @@ namespace Serwer
         {
             //rozmiar_paczki/ilosc_paczek/rozmiar_pliku/id_zadania
             StringBuilder info = new StringBuilder();
-            int packSize = 65535;
+            int packSize = 65500;
 
             if (fileName == null || fileName.Length == 0)
             {
@@ -77,54 +76,13 @@ namespace Serwer
             return info.ToString();
         }
 
+  
 
-        public async Task ProcessReadAsync()
-        {
-            try
-            {
-                string filePath = "plik1.txt";
-                if (File.Exists(filePath) != false)
-                {
-                    string text = await ReadTextAsync(path + filePath);
-                    Console.WriteLine(text);
-                }
-                else
-                {
-                    Console.WriteLine($"file not found: {filePath}");
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-            }
-        }
-
-        async Task<string> ReadTextAsync(string filePath)
-        {
-            using (var sourceStream =
-                new FileStream(
-                    filePath,
-                    FileMode.Open, FileAccess.Read, FileShare.Read,
-                    bufferSize: 4096, useAsync: true))
-            {
-
-                var sb = new StringBuilder();
-
-                byte[] buffer = new byte[0x1000];
-                int numRead;
-                while ((numRead = await sourceStream.ReadAsync(buffer, 0, buffer.Length)) != 0)
-                {
-                    string text = Encoding.Unicode.GetString(buffer, 0, numRead);
-                    sb.Append(text);
-                }
-                return sb.ToString();
-            }
-        }
+  
 
         static void Main()
         {
             Console.WriteLine("[Server] Running!");
-            serverRunning = true;
             string fileName = null;
             var server = new Serwer();
             SerwerTCP serwerTCP = new SerwerTCP(12345);
@@ -134,13 +92,11 @@ namespace Serwer
             while (true)
             {
                 answer = serwerTCP.GetFromClient().Result;   //wait request, nonblocking
-
                
-
                 Task.Run(() => // nie ma koniecznosci tworzyc asynchornicznego przesylania wiadomosci
                 {
-                    // answer = serwerTCP.GetFromClient().Result;   //wait request, nonblocking
-                        while (serverRunning)
+
+                    while (serverRunning)
                         {
                             switch (answer.Split()[0])
                             {
@@ -150,33 +106,43 @@ namespace Serwer
                                 case "get":
                                     fileName = answer.Split()[1];
                                     serwerTCP.SentToClient(server.FileInfo(fileName));
-
-
-                                // sendFlag = true;
                                 break;
-                                default:
-                                    break;
-                            }
-                            serverRunning = false;
+
+                                case "stop":
+
+                                break;
+                            }        
                             answer = null;
                         }                  
                 });
-                Task.Delay(1000);
 
 
-                Task.Run(() =>
+                Task.Run(async() =>
                 {
+
                     dataUDP = serwerUDP.GetFromClient();
-                    Console.WriteLine(dataUDP);
-                    while (true)
+                    int id = int.Parse(dataUDP);
+
+                    if (userBase.ContainsKey(id))
                     {
-                        //dataUDP = serwerUDP.GetFromClient();
-                        //Console.WriteLine(dataUDP);
-                        serwerUDP.SentToClient("siema client");
+                        string[] param = userBase.First(x => x.Key == id).Value.Split();
+                        //int numPack = int.Parse(param[3]);
+                        char[] result = new char[int.Parse(param[2])]; //rozmiar paczki
+                        string data = null;
+                        //while (numPack != 0) 
+                        //{
+                            using (var stream = new FileStream(path + fileName, FileMode.Open, FileAccess.Read, FileShare.Read, bufferSize: int.Parse(param[2]), useAsync: true))
+                            using (StreamReader reader = new StreamReader(stream))
+                            {
+                                while(await reader.ReadAsync(result, 0, int.Parse(param[2])) >= 0) 
+                                {
+                                    data = new string(result);
+                                    await serwerUDP.SentToClient(data);
+                                }                                  
+                            }
                     }
                 });
                 Task.Delay(1000);
-
             }
         }
     }
