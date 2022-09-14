@@ -76,10 +76,6 @@ namespace Serwer
             return info.ToString();
         }
 
-  
-
-  
-
         static void Main()
         {
             Console.WriteLine("[Server] Running!");
@@ -93,7 +89,7 @@ namespace Serwer
             {
                 answer = serwerTCP.GetFromClient().Result;   //wait request, nonblocking
                
-                Task.Run(() => // nie ma koniecznosci tworzyc asynchornicznego przesylania wiadomosci
+                Task.Run(() => 
                 {
 
                     while (serverRunning)
@@ -111,26 +107,33 @@ namespace Serwer
                                 case "stop":
 
                                 break;
+
+                                case "data":
+                                if (answer.Split()[1] == "ok")
+                                {
+                                    Console.WriteLine("[Server] ok");
+                                    serwerTCP.SentToClient("ok");
+                                }
+                                    // else
+                                    // sprawdzamy ktorej paczki brakuje    
+                                break;
                             }        
                             answer = null;
                         }                  
                 });
 
 
-                Task.Run(async() =>
+                Task.Run(async() => // 
                 {
 
-                    dataUDP = serwerUDP.GetFromClient();
+                    dataUDP = serwerUDP.GetFromClient(); //oczekiwanie na dane od klienta
                     int id = int.Parse(dataUDP);
 
                     if (userBase.ContainsKey(id))
                     {
                         string[] param = userBase.First(x => x.Key == id).Value.Split();
-                        //int numPack = int.Parse(param[3]);
                         char[] result = new char[int.Parse(param[2])]; //rozmiar paczki
                         string data = null;
-                        //while (numPack != 0) 
-                        //{
                             using (var stream = new FileStream(path + fileName, FileMode.Open, FileAccess.Read, FileShare.Read, bufferSize: int.Parse(param[2]), useAsync: true))
                             using (StreamReader reader = new StreamReader(stream))
                             {

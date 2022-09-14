@@ -55,8 +55,10 @@ namespace Klient
                                     }
  
                                 }
+                                 clientTcp.SentToServer("data ok");
+                                fileInfo = clientTcp.GetFromServer();
+                                Console.WriteLine("[Client] Status:" + fileInfo);
                             });
-                            clientTcp.SentToServer("data OK");
                         //potwierdzenie otrzymania pliku OK TCP
 
                         break;
@@ -77,8 +79,6 @@ namespace Klient
                 
             }
         }
-
-
 
         static void HelpInfo() 
         {
