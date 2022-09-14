@@ -20,14 +20,14 @@ namespace Serwer
             tcpListener.Start();
         }
 
-        public async Task SentToClient(string command)
+        public void   SentToClient(string command)
         {
             while (client.Connected)
             {
                 while (command != string.Empty)
                 {
                      byte[] msg = Encoding.ASCII.GetBytes(command);
-                     await stream.WriteAsync(msg, 0, msg.Length);
+                      stream.Write(msg, 0, msg.Length);
                      command = string.Empty;
                 }
             }

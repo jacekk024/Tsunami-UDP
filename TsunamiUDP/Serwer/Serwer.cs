@@ -125,7 +125,6 @@ namespace Serwer
         {
             Console.WriteLine("[Server] Running!");
             serverRunning = true;
-            bool sendFlag = false;
             string fileName = null;
             var server = new Serwer();
             SerwerTCP serwerTCP = new SerwerTCP(12345);
@@ -136,46 +135,48 @@ namespace Serwer
             {
                 answer = serwerTCP.GetFromClient().Result;   //wait request, nonblocking
 
+               
 
-                Task.Run(async () =>
+                Task.Run(() => // nie ma koniecznosci tworzyc asynchornicznego przesylania wiadomosci
                 {
-                   // answer = serwerTCP.GetFromClient().Result;   //wait request, nonblocking
-                    while (serverRunning)
-                    {
-                        switch (answer.Split()[0])
+                    // answer = serwerTCP.GetFromClient().Result;   //wait request, nonblocking
+                        while (serverRunning)
                         {
-                            case "list":
-                                await serwerTCP.SentToClient(server.FilesList(path));
-                                break;
-                            case "get":
-                                fileName = answer.Split()[1];
-                                await serwerTCP.SentToClient(server.FileInfo(fileName));
-                                sendFlag = true;
-                                break;
-                            default:
-                                break;
-                        }
-                        serverRunning = false;
-                        answer = null;
-                    }
-                });
-                //  Task.Delay(1000);
-                //    dataUDP = serwerUDP.GetFromClient().Result;
+                            switch (answer.Split()[0])
+                            {
+                                case "list":
+                                    serwerTCP.SentToClient(server.FilesList(path));
+                                    break;
+                                case "get":
+                                    fileName = answer.Split()[1];
+                                    serwerTCP.SentToClient(server.FileInfo(fileName));
 
-                Task.Run( () =>
-                {
-                    //dataUDP = serwerUDP.GetFromClient().Result;
-                    //  dataUDP = serwerUDP.GetFromClient().Result;
-                    while (true)
-                    {
-                        dataUDP = serwerUDP.GetFromClient().Result;
-                        Console.WriteLine(dataUDP);
-                        serwerUDP.SentToClient("siema client");
-                    }
 
-                   // serwerUDP.SentToClient("siema client");
+                                // sendFlag = true;
+                                break;
+                                default:
+                                    break;
+                            }
+                            serverRunning = false;
+                            answer = null;
+                        }                  
                 });
                 Task.Delay(1000);
+
+
+                Task.Run(() =>
+                {
+                    dataUDP = serwerUDP.GetFromClient();
+                    Console.WriteLine(dataUDP);
+                    while (true)
+                    {
+                        //dataUDP = serwerUDP.GetFromClient();
+                        //Console.WriteLine(dataUDP);
+                        serwerUDP.SentToClient("siema client");
+                    }
+                });
+                Task.Delay(1000);
+
             }
         }
     }

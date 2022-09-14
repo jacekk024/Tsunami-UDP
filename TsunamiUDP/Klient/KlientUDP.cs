@@ -28,14 +28,31 @@ namespace Klient
             udpClient.Send(sendBytes, sendBytes.Length);
         }
 
-        public async Task<string> GetFromServer()
+        public void  GetFromServer()
         {
-            //  udpClient.Connect("127.0.0.1", remotePort);
-            //IPEndPoint RemoteIPEndPoint = new IPEndPoint(IPAddress.Any, 0);
-            var receiveBytes = await udpClient.ReceiveAsync();
-            string returnData = Encoding.ASCII.GetString(receiveBytes.Buffer);
-            //udpClient.Close();
-            return returnData;
+
+            //IPEndPoint endPoint = new IPEndPoint(IPAddress.Any, 0);
+            //var bytes = udpClient.Receive(ref endPoint);
+            //string receiveData = Encoding.ASCII.GetString(bytes);
+            //return receiveData;
+
+            try
+            {
+              //  while (true)
+              //  {
+                    IPEndPoint endPoint = new IPEndPoint(IPAddress.Any, 0);
+                    byte[] receiveBytes =  udpClient.Receive(ref endPoint);
+                    string returnData = Encoding.ASCII.GetString(receiveBytes);
+                    Console.WriteLine("[Client] Download data: {0}\n\n",returnData);
+                   // return returnData;
+               // }
+            }
+            catch (Exception e) 
+            {
+                Console.WriteLine(e.Message);
+               // return "error";
+
+            }
         }
 
         public void ShutDownClient()

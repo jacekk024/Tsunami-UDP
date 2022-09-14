@@ -10,30 +10,43 @@ namespace Serwer
 {
     class SerwerUDP
     {
-        private UdpClient client;
-        IPEndPoint RemoteIpEndPoint;
+        private UdpClient udpClient;
+       //IPEndPoint RemoteIpEndPoint;
 
 
         public SerwerUDP(int localPort) 
         {
-            client = new UdpClient(localPort);
-            RemoteIpEndPoint = new IPEndPoint(IPAddress.Any, 0);
+            udpClient = new UdpClient(localPort);
+           // RemoteIpEndPoint = new IPEndPoint(IPAddress.Any, 0);
         }
 
         public void SentToClient(string command)
-        {            
-                 byte[] sendData = Encoding.ASCII.GetBytes(command);
-                 client.Send(sendData, sendData.Length,RemoteIpEndPoint);     
+        {
+     
+                IPEndPoint RemoteIpEndPoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 12347);
+                byte[] sendData = Encoding.ASCII.GetBytes(command);
+                udpClient.Send(sendData, sendData.Length, RemoteIpEndPoint);
+                   
         }
 
 
-        public async Task<string> GetFromClient()
+        public string GetFromClient()
         {
-                var bytes = await client.ReceiveAsync();
-                string receiveData = Encoding.ASCII.GetString(bytes.Buffer);
-                //Console.WriteLine("Received data {0}", receiveData);
-                //Console.WriteLine("[Server UDP] Message receive!");
-                return receiveData;            
+            try
+            {
+                while (true)
+                {
+                    IPEndPoint endPoint = new IPEndPoint(IPAddress.Any, 0);
+                    var bytes =  udpClient.Receive(ref endPoint);
+                    string receiveData = Encoding.ASCII.GetString(bytes);
+                    return receiveData;
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return "[Server UDP] error";
+            }
         }
     }
 }
