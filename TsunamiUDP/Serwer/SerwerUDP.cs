@@ -10,35 +10,40 @@ namespace Serwer
 {
     class SerwerUDP
     {
-        private UdpClient client;
-        IPEndPoint RemoteIpEndPoint;
+        private UdpClient udpClient;
+       //IPEndPoint RemoteIpEndPoint;
 
 
         public SerwerUDP(int localPort) 
         {
-            client = new UdpClient(localPort);
-            RemoteIpEndPoint = new IPEndPoint(IPAddress.Any, 0);
+            udpClient = new UdpClient(localPort);
+           // RemoteIpEndPoint = new IPEndPoint(IPAddress.Any, 0);
         }
 
-        public string SentToClient()
+        public async Task SentToClient(string command)
         {
-            while (true) 
-            {
-                byte[] sendData = Encoding.ASCII.GetBytes(GetFromClient());
-                client.Send(sendData, sendData.Length, RemoteIpEndPoint);
-                Console.WriteLine("[Server UDP] Message sent!");
-
-            }
+                IPEndPoint RemoteIpEndPoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 12347);
+                byte[] sendData = Encoding.ASCII.GetBytes(command);
+                await udpClient.SendAsync(sendData, sendData.Length, RemoteIpEndPoint);            
         }
+
 
         public string GetFromClient()
         {
-            while (true)
+            try
             {
-                byte[] bytes = client.Receive(ref RemoteIpEndPoint);
-                string receiveData = Encoding.ASCII.GetString(bytes);
-                Console.WriteLine("[Server UDP] Message receive!");
-                return receiveData;
+                while (true)
+                {
+                    IPEndPoint endPoint = new IPEndPoint(IPAddress.Any, 0);
+                    var bytes =  udpClient.Receive(ref endPoint);
+                    string receiveData = Encoding.ASCII.GetString(bytes);
+                    return receiveData;
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return "[Server UDP] error";
             }
         }
     }
